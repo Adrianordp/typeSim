@@ -4,6 +4,7 @@ from random import uniform
 import tkinter
 import tkinter.font as tkFont
 import tkinter.ttk as ttk
+import tkinter.colorchooser
 from typing import Text
 
 class Application:
@@ -29,15 +30,15 @@ class Application:
         self.container1.pack()
 
         self.container2 = tkinter.Frame(master)
-        self.container2["padx"] = 20
+        self.container2["padx"] = 10
         self.container2.pack()
 
         self.container4 = tkinter.Frame(master)
-        self.container4["padx"] = 20
+        self.container4["padx"] = 10
         self.container4.pack(side=tkinter.LEFT)
 
         self.container3 = tkinter.Frame(master)
-        self.container3["padx"] = 20
+        self.container3["padx"] = 10
         self.container3.pack()
 
         self.titulo = tkinter.Label(self.container1, text="Typing Simulator")
@@ -59,7 +60,7 @@ class Application:
         self.fontSizeEntry.pack(side=tkinter.LEFT)
 
         self.speedLabel = tkinter.Label(self.container4, text='Speed')
-        self.speedLabel.pack(side=tkinter.LEFT,padx=(20,0))
+        self.speedLabel.pack(side=tkinter.LEFT)
 
         self.speedMin = tkinter.Entry(self.container4, width=5)
         self.speedMin.insert(tkinter.END, '0.001')
@@ -81,6 +82,22 @@ class Application:
         self.menu.add_command(label="Clear", command=self.do_clear)
         self.menu.add_command(label="Clear and Paste", command=self.do_clear_and_paste)
         self.menu.bind("<FocusOut>",self.popupFocusOut)
+
+        self.fgButton = tkinter.Button(self.container4, command=self.change_fg, bg='black', width=2)
+        self.fgButton.pack(side=tkinter.LEFT)
+        self.bgButton = tkinter.Button(self.container4, command=self.change_bg, bg='white', width=2)
+        self.bgButton.pack(side=tkinter.LEFT)
+
+
+    def change_fg(self):
+        self.colorChooser = tkinter.colorchooser.askcolor(title='Foreground color')
+        self.typing['fg'] = self.colorChooser[1]
+        self.fgButton['bg'] = self.colorChooser[1]
+
+    def change_bg(self):
+        self.colorChooser = tkinter.colorchooser.askcolor(title='Background color')
+        self.typing['bg'] = self.colorChooser[1]
+        self.bgButton['bg'] = self.colorChooser[1]
 
     def popupFocusOut(self, event=None):
         self.menu.unpost()
@@ -106,26 +123,19 @@ class Application:
         self.fontFamily = self.comboFont.get()
         self.fontSize = self.fontSizeEntry.get()
         self.fontTyping = (self.fontFamily, self.fontSize)
-
         self.typing["font"] = self.fontTyping
-
-        speedMin = float(self.speedMin.get())
-        speedMax = float(self.speedMax.get())
-
         self.typing.config(state=tkinter.NORMAL)
         self.typing.delete('1.0', tkinter.END)
         self.typing.config(state=tkinter.DISABLED)
-
         paragraph = self.paragraph.get('1.0', tkinter.END)
         N = len(paragraph)
-
+        speedMin = float(self.speedMin.get())
+        speedMax = float(self.speedMax.get())
         for i in range(N):
                 self.typing.config(state=tkinter.NORMAL)
                 self.typing.insert(tkinter.END, paragraph[i])
                 self.typing.config(state=tkinter.DISABLED)
-
                 sleep(uniform(speedMin,speedMax))
-
                 root.update()
     
 root = tkinter.Tk()
